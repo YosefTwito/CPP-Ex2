@@ -1,13 +1,23 @@
 #include "FamilyTree.hpp"
 #include <iostream>
+#include <exception>
+
 using namespace std;
 using namespace family;
 
-Tree* getNode (Tree* ptr, string s){ //Done - Gotta test cases and Exceptions
-	if (ptr->name==s) { return ptr; }
-	if (ptr->f!=nullptr){ return getNode(ptr->f, s); }
-	if (ptr->m!=nullptr){ return getNode(ptr->m, s); }
-	throw "No such name in the tree";
+Tree* getNode (Tree* ptr, string str){ //Done - Gotta test cases and Exceptions
+	if (ptr->name==str) { return ptr; }
+	if (ptr->f!=nullptr){
+        Tree* ans = getNode(ptr->f, str);
+        if(ans != nullptr)
+            return ans;
+    }
+	if (ptr->m!=nullptr){
+        Tree* ans = getNode(ptr->m, str);
+        if(ans != nullptr)
+            return ans;
+    }
+	return nullptr;
 }
 
 Tree &Tree::addFather(string name, string father){ //Done - Gotta test cases and Exceptions
@@ -16,15 +26,25 @@ Tree &Tree::addFather(string name, string father){ //Done - Gotta test cases and
             if (ptr->f == nullptr){
                   ptr->f = new Tree(father);
                   ptr->f->s = ptr;
+                  //if's for the relation
+                  if (ptr->rel == "me") ptr->f->rel = "father";
+                  else if (ptr->rel == "father") ptr->f->rel = "grandfather";
+                  else if (ptr->rel == "mother") ptr->f->rel = "grandfather";
+                  else if (ptr->rel == "grandfather") ptr->f->rel = "great-grandfather";
+                  else if (ptr->rel == "grandmother") ptr->f->rel = "great-grandfather";
+                  else{
+                       string temp = "great-"+ptr->rel;
+                       for (int j=0; j<6; j++) temp.pop_back();
+                       temp+="father";
+                       ptr->f->rel = temp;
+                  }
                   return *ptr;
             }
             else {
                   throw "This member already has a father !";
             }
 	}
-	else{
-		throw "Could not find the...";
-	}
+	else{ throw runtime_error(name+" is not in the tree"); }
 }
 
 Tree &Tree::addMother(string name, string mother) { //Done - Gotta test cases and Exceptions
@@ -33,15 +53,25 @@ Tree &Tree::addMother(string name, string mother) { //Done - Gotta test cases an
             if (ptr->m == nullptr){
                   ptr->m = new Tree(mother);
                   ptr->m->s = ptr;
+                  //if's for the relation
+                  if (ptr->rel == "me") ptr->m->rel = "mother";
+                  else if (ptr->rel == "mother") ptr->m->rel = "grandmother";
+                  else if (ptr->rel == "father") ptr->m->rel = "grandmother";
+                  else if (ptr->rel == "grandmother") ptr->m->rel = "great-grandmother";
+                  else if (ptr->rel == "grandfather") ptr->m->rel = "great-grandmother";
+                  else{
+                        string temp = "great-"+ptr->rel;
+                        for (int j=0; j<6; j++) temp.pop_back();
+                        temp+="mother";
+                        ptr->m->rel = temp;
+                  }
                   return *ptr;
             }
 		else {
                   throw "This member already has a mother !";
 		}
 	}
-	else{
-		throw "Could not find the...";
-	}
+	else{ throw runtime_error(name+" is not in the tree"); }
 }
 
 /** Got this function to print the tree from :
@@ -62,24 +92,44 @@ void print2D(Tree *root, int space){
 }
 //
 void Tree::display() { // Done !
-      cout << "Display Tree:\n--------------------------------------------------------------" ;
+      cout << "Display Tree:\n--------------------------------------------------------------";
       print2D(this, 0);
       cout << "--------------------------------------------------------------" << endl;
 }
 
-string Tree::relation(string s) {
-
-	return "unrelated";
+string Tree::relation(string str) {
+      Tree* ptr = getNode(this, str);
+      if (ptr != nullptr) return ptr->rel;
+      return "unrelated";
 }
 
-string Tree::find(string s) {
-
-	return "uu";
+Tree* findRecursive(Tree* ptr, string str){
+      if (ptr->rel==str) { return ptr; }
+      if (ptr->f!=nullptr){
+            Tree* ans = findRecursive(ptr->f, str);
+            if(ans != nullptr)
+            return ans;
+      }
+      if (ptr->m!=nullptr){
+            Tree* ans = findRecursive(ptr->m, str);
+            if(ans != nullptr)
+            return ans;
+      }
+      return nullptr;
 }
 
-void Tree::remove(string s) { // Done - Gotta see about remove for the root !!!!!!!!!
-	Tree* ptr = getNode(this, s);
-	if (ptr->s->m == ptr){ ptr->s->m = nullptr; }
-	if (ptr->s->f == ptr){ ptr->s->f = nullptr; }
-      delete ptr;
+string Tree::find(string str) {
+      Tree* ptr = findRecursive(this, str);
+      if (ptr != nullptr){ return ptr->name; }
+	else{ throw runtime_error(str+" is not in the tree"); }
+}
+
+void Tree::remove(string str) { // Done - Gotta see about remove for the root !!!!!!!!!
+	Tree* ptr = getNode(this, str);
+	if(ptr!=nullptr){
+            if (ptr->s->m == ptr){ ptr->s->m = nullptr; }
+            if (ptr->s->f == ptr){ ptr->s->f = nullptr; }
+            delete ptr;
+      }
+      else { throw runtime_error(str+" is not in the tree"); }
 }

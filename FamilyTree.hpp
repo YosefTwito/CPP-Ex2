@@ -9,11 +9,12 @@ namespace family{
 	public:
 		string name;
 		Tree *f, *m, *s;
+		string rel;
 
 	public:
 
 		Tree(string s):
-			name(s),f(nullptr),m(nullptr){};
+			name(s),f(nullptr),m(nullptr),s(nullptr), rel("me"){};
 
 		~Tree(){
                   if(m) delete m;
@@ -31,4 +32,3 @@ namespace family{
 		string find(string s);
 	};
 };
-
