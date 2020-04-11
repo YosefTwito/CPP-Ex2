@@ -5,7 +5,7 @@
 using namespace std;
 using namespace family;
 
-Tree* getNode (Tree* ptr, string str){ //Done - Gotta test cases and Exceptions
+Tree* getNode (Tree* ptr, string str){
 	if (ptr->name==str) { return ptr; }
 	if (ptr->f!=nullptr){
         Tree* ans = getNode(ptr->f, str);
@@ -20,7 +20,7 @@ Tree* getNode (Tree* ptr, string str){ //Done - Gotta test cases and Exceptions
 	return nullptr;
 }
 
-Tree &Tree::addFather(string name, string father){ //Done - Gotta test cases and Exceptions
+Tree &Tree::addFather(string name, string father){
 	Tree* ptr = getNode(this, name);
 	if (ptr != nullptr) {
             if (ptr->f == nullptr){
@@ -40,14 +40,12 @@ Tree &Tree::addFather(string name, string father){ //Done - Gotta test cases and
                   }
                   return *ptr;
             }
-            else {
-                  throw "This member already has a father !";
-            }
+		else { throw runtime_error(name +" already has a father !"); }
 	}
 	else{ throw runtime_error(name+" is not in the tree"); }
 }
 
-Tree &Tree::addMother(string name, string mother) { //Done - Gotta test cases and Exceptions
+Tree &Tree::addMother(string name, string mother) {
 	Tree* ptr = getNode(this, name);
 	if (ptr != nullptr) {
             if (ptr->m == nullptr){
@@ -67,9 +65,7 @@ Tree &Tree::addMother(string name, string mother) { //Done - Gotta test cases an
                   }
                   return *ptr;
             }
-		else {
-                  throw "This member already has a mother !";
-		}
+		else { throw runtime_error(name +" already has a mother !"); }
 	}
 	else{ throw runtime_error(name+" is not in the tree"); }
 }
@@ -121,11 +117,12 @@ Tree* findRecursive(Tree* ptr, string str){
 string Tree::find(string str) {
       Tree* ptr = findRecursive(this, str);
       if (ptr != nullptr){ return ptr->name; }
-	else{ throw runtime_error(str+" is not in the tree"); }
+	else{ throw runtime_error("The tree cannot handle the '" + str + "' relation"); }
 }
 
-void Tree::remove(string str) { // Done - Gotta see about remove for the root !!!!!!!!!
+void Tree::remove(string str) {
 	Tree* ptr = getNode(this, str);
+	if (ptr == this) { throw runtime_error("Can't remove the root of the tree (aka -> me"); }
 	if(ptr!=nullptr){
             if (ptr->s->m == ptr){ ptr->s->m = nullptr; }
             if (ptr->s->f == ptr){ ptr->s->f = nullptr; }

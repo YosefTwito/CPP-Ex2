@@ -19,7 +19,7 @@ namespace family{
 		~Tree(){
                   if(m) delete m;
                   if(f) delete f;
-                  cout << "destruct -> " << this->name << endl;
+                  //cout << "destruct -> " << this->name << endl;
 		};
 
 		Tree &addFather(string name, string father);
