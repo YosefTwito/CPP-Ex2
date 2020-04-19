@@ -38,7 +38,8 @@ Tree &Tree::addFather(string name, string father){
                        temp+="father";
                        ptr->f->rel = temp;
                   }
-                  return *ptr;
+                  Tree* ans=this;
+                  return *ans;
             }
 		else { throw runtime_error(name +" already has a father !"); }
 	}
@@ -63,7 +64,8 @@ Tree &Tree::addMother(string name, string mother) {
                         temp+="mother";
                         ptr->m->rel = temp;
                   }
-                  return *ptr;
+                  Tree* ans=this;
+                  return *ans;
             }
 		else { throw runtime_error(name +" already has a mother !"); }
 	}
